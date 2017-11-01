@@ -9,7 +9,7 @@
 #define CACHE_HIT  1
 #define CACHE_MISS 0
 
-
+//这是一个cache的模拟器
 class Cache
 {
 private:
