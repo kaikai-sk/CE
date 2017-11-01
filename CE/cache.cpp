@@ -10,19 +10,92 @@ int Cache::query(unsigned address)
 	//地址不在cache中
     if(buffer.find(address) == buffer.end())
     {
-        Action &action = policy->miss(address);
-        switch(action.type)
-        {
-            case POLICY_IGNORE:
-                break;
-            case POLICY_APPEND:
-                buffer.insert(action.new_address);
-                break;
-            case POLICY_REPLACE:
-                buffer.erase(action.old_address);
-                buffer.insert(action.new_address);
+        vector<Action*> actionList= policy->miss(address);
+		for (int i = 0; i < actionList.size(); i++)
+		{
+			Action action = *actionList[i];
+			switch (action.type)
+			{
+			case POLICY_IGNORE:
+				break;
+			case POLICY_APPEND:
+				buffer.insert(action.new_address);
+				break;
+			case POLICY_REPLACE:
+				buffer.erase(action.old_address);
+				buffer.insert(action.new_address);
 				this->replaceNum++;
-                break;
+				break;
+			case POLICY_APPEND_APPEND:
+				buffer.insert(action.new_address);
+				buffer.insert(action.prefetch_address);
+				break;
+			case POLICY_APPEND_IGNORE:
+				buffer.insert(action.new_address);
+				break;
+			case POLICY_APPEND_REPLACE:
+				buffer.insert(action.new_address);
+				buffer.erase(action.prefetch_old_address);
+				buffer.insert(action.prefetch_address);
+				this->replaceNum++;
+				break;
+			case POLICY_IGNORE_IGNORE:
+
+				break;
+			case POLICY_IGNORE_APPEND:
+				buffer.insert(action.prefetch_address);
+				break;
+			case POLICY_IGNORE_REPLACE:
+				buffer.erase(action.prefetch_old_address);
+				buffer.insert(action.prefetch_address);
+				this->replaceNum++;
+				break;
+			case POLICY_REPLACE_APPEND:
+				//不存在的
+				break;
+			case POLICY_REPLACE_IGNORE:
+				buffer.erase(action.old_address);
+				buffer.insert(action.new_address);
+				this->replaceNum++;
+				break;
+			case POLICY_PREFETCH_REPLACE:
+				buffer.erase(action.prefetch_old_address);
+				buffer.insert(action.prefetch_address);
+				this->replaceNum ++;
+				break;
+			case POLICY_PREFETCH_APPEND:
+				buffer.insert(action.new_address);
+				buffer.insert(action.prefetch_address);
+				break;
+			/*case POLICY_REPLACE_REPLACE:
+				buffer.erase(action.old_address);
+				buffer.insert(action.new_address);
+				buffer.erase(action.prefetch_old_address);
+				buffer.insert(action.prefetch_address);
+				this->replaceNum += 2;*/
+				//break;
+			}
+		}
+        return CACHE_MISS;
+    }
+    else
+    {
+        vector<Action*> actionList = policy->hit(address);
+		for (int i = 0; i < actionList.size(); i++)
+		{
+			Action action = *actionList[i];
+			switch (action.type)
+			{
+			case POLICY_IGNORE:
+				break;
+			case POLICY_APPEND:
+				buffer.insert(action.new_address);
+				break;
+			case POLICY_REPLACE:
+				buffer.erase(action.old_address);
+				buffer.insert(action.new_address);
+				this->replaceNum++;
+				break;
 			case POLICY_APPEND_APPEND:
 				buffer.insert(action.new_address);
 				buffer.insert(action.prefetch_address);
@@ -61,62 +134,16 @@ int Cache::query(unsigned address)
 				buffer.insert(action.prefetch_address);
 				this->replaceNum++;
 				break;
-        }
-        return CACHE_MISS;
-    }
-    else
-    {
-        Action &action = policy->hit(address);
-		switch (action.type)
-		{
-		case POLICY_IGNORE:
-			break;
-		case POLICY_APPEND:
-			buffer.insert(action.new_address);
-			break;
-		case POLICY_REPLACE:
-			buffer.erase(action.old_address);
-			buffer.insert(action.new_address);
-			this->replaceNum++;
-			break;
-		case POLICY_APPEND_APPEND:
-			buffer.insert(action.new_address);
-			buffer.insert(action.prefetch_address);
-			break;
-		case POLICY_APPEND_IGNORE:
-			buffer.insert(action.new_address);
-			break;
-		case POLICY_APPEND_REPLACE:
-			buffer.insert(action.new_address);
-			buffer.erase(action.prefetch_old_address);
-			buffer.insert(action.prefetch_address);
-			this->replaceNum++;
-			break;
-		case POLICY_IGNORE_IGNORE:
-			break;
-		case POLICY_IGNORE_APPEND:
-			buffer.insert(action.prefetch_address);
-			break;
-		case POLICY_IGNORE_REPLACE:
-			buffer.erase(action.prefetch_old_address);
-			buffer.insert(action.prefetch_address);
-			this->replaceNum++;
-			break;
-		case POLICY_REPLACE_APPEND:
-			//不存在的
-			break;
-		case POLICY_REPLACE_IGNORE:
-			buffer.erase(action.old_address);
-			buffer.insert(action.new_address);
-			this->replaceNum++;
-			break;
-		case POLICY_REPLACE_REPLACE:
-			buffer.erase(action.old_address);
-			buffer.insert(action.new_address);
-			buffer.erase(action.prefetch_old_address);
-			buffer.insert(action.prefetch_address);
-			this->replaceNum++;
-			break;
+			case POLICY_PREFETCH_REPLACE:
+				buffer.erase(action.prefetch_old_address);
+				buffer.insert(action.prefetch_address);
+				this->replaceNum++;
+				break;
+			case POLICY_PREFETCH_APPEND:
+				buffer.insert(action.new_address);
+				buffer.insert(action.prefetch_address);
+				break;
+			}
 		}
         return CACHE_HIT;
     }

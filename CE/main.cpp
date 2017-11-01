@@ -54,24 +54,30 @@ int main(int argc, char *argv[])
 		lineNum++;
 		if (lineNum <= threshold)
 		{
+			
 			continue;
 		}
-
+		if (lineNum % 10000==0)
+		{
+			cout << lineNum << endl;
+		}
         if(cache.query(address) == CACHE_HIT)
             hit_count++;
         else
             miss_count++;
     }
-
-    delete policy;
-    ifs.close();
-
+	
     cout << "hit:" << hit_count << " / miss:" << miss_count << endl;
     cout << "hit ratio: " << (100.0 * hit_count / (hit_count + miss_count)) << "%" << endl;
     cout << "miss ratio: " << (100.0 * miss_count / (hit_count + miss_count)) << "%" << endl;
 	cout << "replace num:" << cache.getReplaceNum() << endl;
+	cout << "prefetch num" << ((LRUPolicy*)policy)->getPrefetchCount() << endl;
+	cout << "prefetch replace num" << ((LRUPolicy*)policy)->getPrefetchReplaceCount() << endl;
 
 	cin.get();
+
+	delete policy;
+	ifs.close();
 
     return 0;
 }

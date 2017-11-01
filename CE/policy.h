@@ -14,7 +14,11 @@
 #define POLICY_IGNORE_IGNORE  9
 #define POLICY_IGNORE_APPEND  10
 #define POLICY_IGNORE_REPLACE  11
+#define POLICY_PREFETCH_APPEND  12
+#define POLICY_PREFETCH_REPLACE  13
 
+#include <vector>
+using namespace std;
 
 typedef struct _Action
 {
@@ -29,8 +33,8 @@ typedef struct _Action
 class Policy
 {
 public:
-    virtual Action &hit(unsigned address) = 0;
-    virtual Action &miss(unsigned address) = 0;
+    virtual vector<Action*> hit(unsigned address) = 0;
+    virtual vector<Action*> miss(unsigned address) = 0;
 
     virtual ~Policy() {}
 };
