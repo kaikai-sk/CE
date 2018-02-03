@@ -62,7 +62,7 @@ bool LRUCore::exist(unsigned address)
     return records.find(address) != records.end();
 }
 
-unsigned LRUCore::update(unsigned address)
+unsigned LRUCore::update(unsigned address,unsigned tag)
 {
     Node *node;
     const auto &iter = records.find(address);
@@ -70,6 +70,12 @@ unsigned LRUCore::update(unsigned address)
     if(iter == records.end())
     {
         node = new Node;
+
+		if (tag == 1)
+		{
+			node.
+		}
+
 
         node->key = address;
         node->attach(head);

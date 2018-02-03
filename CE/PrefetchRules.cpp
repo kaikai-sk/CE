@@ -33,7 +33,10 @@ vector<unsigned int> PrefetchRules::find(unsigned int P)
 	int i = 0;
 	while (iter != rules.end())
 	{
-		myRules.push_back(iter->second);
+		if (iter->first == P)
+		{
+			myRules.push_back(iter->second);
+		}
 		iter++;
 	}
 	return myRules;

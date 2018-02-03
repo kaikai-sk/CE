@@ -1,49 +1,8 @@
 #include "lru_core.h"
 
 
-class Node
-{
-public:
-	//指向下一个节点
-    Node    *next;
-	//指向前一个节点
-    Node    *prev;
-	//page No
-    unsigned key;
 
-public:
-    Node(): next(0), prev(0), key(0) {}
 
-    void attach(Node* prev);
-    void detach();
-};
-
-/*
-	链表中插入一个节点
-*/
-void Node::attach(Node *head)
-{
-    if(head->next)
-        head->next->prev = this;
-    this->next = head->next;
-
-    head->next = this;
-    this->prev = head;
-}
-
-/*
-链表中删除一个节点
-*/
-void Node::detach()
-{
-    if(this->prev)
-        this->prev->next = this->next;
-    if(this->next)
-        this->next->prev = this->prev;
-
-    this->next = 0;  // I don't like `nullptr`
-    this->prev = 0;
-}
 
 
 LRUCore::LRUCore()
@@ -58,6 +17,12 @@ LRUCore::LRUCore(PrefetchRules prefetchRules)
 	this->prefetchRules = prefetchRules;
 }
 
+LRUCore::LRUCore(PrefetchRules prefetchRules, ofstream* ofs_lruCore_snapshoot)
+{
+	LRUCore();
+	this->prefetchRules = prefetchRules;
+	this->ofs_lruCore_snapshoot = ofs_lruCore_snapshoot;
+}
 
 LRUCore::~LRUCore()
 {
@@ -167,22 +132,47 @@ bool LRUCore::exist(unsigned address)
 //    return address;
 //}
 
-unsigned LRUCore::update(unsigned address)
+/*
+	打印cache的快照
+*/
+void LRUCore::printLRUCoreSnapshoot()
+{
+	for (auto &iter = records.begin(); iter != records.end(); iter++)
+	{
+		(*this->ofs_lruCore_snapshoot) << iter->first << ' ';
+	}
+	(*this->ofs_lruCore_snapshoot) << endl;
+}
+
+unsigned LRUCore::update(unsigned address,unsigned tag)
 {
 	Node *node;
 	const auto &iter = records.find(address);
 
+	/*这是插入的情况*/
 	if (iter == records.end())
 	{
 		node = new Node;
-
+		if (tag == 1)
+		{
+			node->tag = 1;
+		}
 		node->key = address;
 		node->attach(head);
 		records[address] = node;
 	}
+
+	//这是命中的情况，要调整栈的顺序
 	else
 	{
 		node = iter->second;
+
+		//预取的块被命中的情况
+		if (node->tag == 1)
+		{
+			//命中次数++
+			node->hit_num++;
+		}
 
 		node->detach();
 		node->attach(head);
@@ -191,11 +181,11 @@ unsigned LRUCore::update(unsigned address)
 	return address;
 }
 
-
-unsigned LRUCore::remove(unsigned address)
 /* 'address == -1' means remove the last one */
+Node LRUCore::remove(unsigned address)
 {
     Node *node;
+	Node returnedNode;
 
     if(address == (unsigned)-1)
     {
@@ -215,8 +205,11 @@ unsigned LRUCore::remove(unsigned address)
         records.erase(node->key);
     }
 
+	//要反回这个要被替换的块的详细信息
+	returnedNode = (*node);
+
     delete node;
-    return address;
+    return returnedNode;
 }
 
 void LRUCore::setCapacity(unsigned capacity)
@@ -265,3 +258,13 @@ int main(void)
     return 0;
 }
 #endif
+
+
+
+
+
+// 指定打印snapshoot的文件名
+void LRUCore::setOfs(ofstream* ofs_lru_core_snapshoot)
+{
+	this->ofs_lruCore_snapshoot = ofs_lru_core_snapshoot;
+}

@@ -115,15 +115,23 @@
     <ClCompile Include="lru_core.cpp" />
     <ClCompile Include="lru_policy.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="plwap.cpp" />
+    <ClCompile Include="PostProcessFile.cpp" />
     <ClCompile Include="PrefetchRules.cpp" />
+    <ClCompile Include="PreProcessFile.cpp" />
     <ClCompile Include="p_policy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cache.h" />
     <ClInclude Include="lru_core.h" />
     <ClInclude Include="lru_policy.h" />
+    <ClInclude Include="Node.h" />
+    <ClInclude Include="plwap.h" />
     <ClInclude Include="policy.h" />
+    <ClInclude Include="PostProcessFile.h" />
     <ClInclude Include="PrefetchRules.h" />
+    <ClInclude Include="PreProcessFile.h" />
     <ClInclude Include="p_policy.h" />
   </ItemGroup>
   <ItemGroup>

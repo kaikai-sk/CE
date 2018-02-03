@@ -33,6 +33,18 @@
     <ClCompile Include="PrefetchRules.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="plwap.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PreProcessFile.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PostProcessFile.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Node.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cache.h">
@@ -51,6 +63,18 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="PrefetchRules.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="plwap.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PreProcessFile.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PostProcessFile.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

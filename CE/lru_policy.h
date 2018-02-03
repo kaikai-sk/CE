@@ -6,6 +6,7 @@
 #include "policy.h"
 #include "lru_core.h"
 #include "PrefetchRules.h"
+#include "Node.h"
 #include <fstream>
 #include <vector>
 
@@ -25,10 +26,15 @@ private:
     /*Action action;*/
 	//´òÓ¡Ô¤È¡µÄ×Ù¼£
 	ofstream* ofs;
+	ofstream* ofs_lru_core_snapshoot;
+	ofstream* ofs_page_detail;
+
 public:
     LRUPolicy(unsigned capacity);
 	LRUPolicy(unsigned capacity, PrefetchRules prefetchRules);
 	LRUPolicy(unsigned capacity, PrefetchRules prefetchRules,ofstream* ofs);
+	LRUPolicy(unsigned capacity, PrefetchRules prefetchRules, ofstream* ofs,ofstream* ofs_lru_core_snapshoot);
+	LRUPolicy(unsigned capacity, PrefetchRules prefetchRules, ofstream* ofs, ofstream* ofs_lru_core_snapshoot,ofstream* ofs_page_detail);
     ~LRUPolicy();
 
     vector<Action*> hit(unsigned address);
