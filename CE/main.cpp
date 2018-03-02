@@ -18,10 +18,6 @@ using namespace std;
 */
 int main(int argc, char *argv[])
 {
-    using std::cout;
-    using std::endl;
-    using std::ifstream;
-
     if(argc != 5)
     {
         cout << argv[0] << " file capacity" << endl;
@@ -32,12 +28,14 @@ int main(int argc, char *argv[])
 	//如果打开plwap开关，我们就执行PLWAP挖掘
 	if (strcmp(argv[3],"1")==0)
 	{
+		cout << argv[1] << endl;
 		PreProcessFile preProcessFile;
-		preProcessFile.vectToMatrix(argv[1], "dstForPLWAP.data", 20);
-		plwap(0.05,"result_PLWAP.data","dstForPLWAP.data");
+		preProcessFile.vectToMatrix(argv[1], ".\\temp\\dstForPLWAP.data", 20);
+		plwap(0.025,".\\temp\\result_PLWAP.data",".\\temp\\dstForPLWAP.data");
 		/*plwap(0.6, "result_PLWAP.data", "example.data");*/
 		PostProcessFile postProcessFile;
-		postProcessFile.generateBinaryRules("result_PLWAP.data", "result_PLWAP_post.data");
+		postProcessFile.generateBinaryRules(".\\temp\\result_PLWAP.data", ".\\dst\\result_PLWAP_post.data");
+		cin.get();
 		cin.get();
 		return EXIT_SUCCESS;
 	}
@@ -82,16 +80,16 @@ int main(int argc, char *argv[])
 
 
     ifstream ifs(argv[1]);
-	ofstream ofs("accessSeq.txt");
-	ofstream ofs_cache_sanpshoot("cache_snapshoot.txt");
-	ofstream ofs_lruCore_snapshot("lru_core_snapshoot.txt");
-	ofstream ofs_page_detail("page_detail.txt");
+	ofstream ofs(".\\temp\\accessSeq.txt");
+	ofstream ofs_cache_sanpshoot(".\\temp\\cache_snapshoot.txt");
+	ofstream ofs_lruCore_snapshot(".\\temp\\lru_core_snapshoot.txt");
+	ofstream ofs_page_detail(".\\temp\\page_detail.txt");
 
     unsigned capacity = atol(argv[2]);
 
     cout << "file: " << argv[1] << " / capacity: " << capacity << endl;
 
-	ifstream prefetchRulesFile("result_PLWAP_post.data");
+	ifstream prefetchRulesFile(".\\dst\\result_PLWAP_post.data");
 	unsigned P, Q;
 	PrefetchRules prefetchRules;
 
@@ -122,10 +120,10 @@ int main(int argc, char *argv[])
 		{
 			cout << lineNum << endl;
 		}
-		if (lineNum == 10000)
+		/*if (lineNum == 10000)
 		{
 			break;
-		}
+		}*/
         if(cache.query(address) == CACHE_HIT)
             hit_count++;
         else

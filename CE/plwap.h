@@ -60,11 +60,14 @@ typedef struct linkheader1
 {
 	//事件名称
 	int event;	//	event name of the linkage
-				//事件出现的频数
+
+	//事件出现的频数
 	int occur;	//	occurence of the node in tree 
-				//指向树中第一个同名节点
+	
+	//指向树中第一个同名节点
 	node *link;	//link to the first occurrence of the event in tree
-				//指向树中事件最后出现的节点
+	
+	//指向树中事件最后出现的节点
 	node *lastLink;	//	link to the last occurrence of the event in tree
 }linkheader;
 
@@ -86,5 +89,5 @@ positionCode* makeCode(int, positionCode*, bool);
 // Make position code for a node
 int checkPosition(positionCode*, int, positionCode*, int);
 // Check the position between two nodes
-void MiningProcess(list<node*>, queue<int>, int);
+void MiningProcess(list<node*>, queue<int>, int,char*);
 // Mine sequential pattern from PLWAP tree

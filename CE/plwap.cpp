@@ -82,7 +82,8 @@ and total seconds for running the program.
 list<linkheader> lnkhdr;// all linkage headers are stored in a list(table)
 						//全局变量，PLWAP-Tree的根节点
 node *root;		// root of whole tree
-				//最小事件频数
+				
+//最小事件频数
 int frequency;		// occurrence number can be considered frequent
 					//WASD中记录数
 int seqNumber;		// number of sequence in database
@@ -117,7 +118,7 @@ void plwap(double minSupp, char* plwap_result_file,char* src_data_file)
 	
 	//cout<<"\n\nBegin the mining process"<<endl;
 	
-	MiningProcess(newRootSet, beginPattern, seqNumber);
+	MiningProcess(newRootSet, beginPattern, seqNumber, plwap_result_file);
 	
 	int tim2 = time(0);
 	// end = clock();
@@ -235,7 +236,7 @@ Called in Parameters:
 	(2) basePattern: is the subsequence which is obtained in previous round
 	(3) Count: is the number which is sum of occurrence of suffix tree
 */
-void MiningProcess(list<node*> rootSet, queue<int> basePattern, int Count)
+void MiningProcess(list<node*> rootSet, queue<int> basePattern, int Count,char* resFileName)
 {
 	list<linkheader>::iterator pnt;
 
@@ -319,9 +320,9 @@ void MiningProcess(list<node*> rootSet, queue<int> basePattern, int Count)
 			tempPattern.push(pnt->event);
 			queue<int> otherPattern = tempPattern;
 
-			ofstream result("result_PLWAP.data", ios::app);
+			ofstream result(resFileName, ios::app);
 
-
+			//将一条频繁序列输出到文件中
 			while (!tempPattern.empty())
 			{
 				result << tempPattern.front() << "\t";
@@ -330,7 +331,7 @@ void MiningProcess(list<node*> rootSet, queue<int> basePattern, int Count)
 			result << endl;
 
 			if (totalSon >= frequency)
-				MiningProcess(newRootSet, otherPattern, count - emptySon);
+				MiningProcess(newRootSet, otherPattern, count - emptySon,resFileName);
 		}
 	}
 	return;
