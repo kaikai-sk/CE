@@ -98,7 +98,7 @@ int seqNumber;		// number of sequence in database
 void plwap(double minSupp, char* plwap_result_file,char* src_data_file)
 {
 	list<node*> newRootSet;
-	queue<int> beginPattern;
+	queue<SubLinkHeader> beginPattern;
 
 	ofstream result(plwap_result_file, ios::trunc);
 		// open the result file for writing
@@ -236,7 +236,7 @@ Called in Parameters:
 	(2) basePattern: is the subsequence which is obtained in previous round
 	(3) Count: is the number which is sum of occurrence of suffix tree
 */
-void MiningProcess(list<node*> rootSet, queue<int> basePattern, int Count,char* resFileName)
+void MiningProcess(list<node*> rootSet, queue<SubLinkHeader> basePattern, int Count,char* resFileName)
 {
 	list<linkheader>::iterator pnt;
 
@@ -315,17 +315,22 @@ void MiningProcess(list<node*> rootSet, queue<int> basePattern, int Count,char* 
 
 		if (count >= frequency)
 		{
-			queue<int> tempPattern = basePattern;
-
-			tempPattern.push(pnt->event);
-			queue<int> otherPattern = tempPattern;
+			queue<SubLinkHeader> tempPattern = basePattern;
+			SubLinkHeader tempMyHeader(pnt->event, pnt->occur, double(pnt->occur / (double)seqNumber));
+			tempPattern.push(tempMyHeader);
+			queue<SubLinkHeader> otherPattern = tempPattern;
 
 			ofstream result(resFileName, ios::app);
 
 			//将一条频繁序列输出到文件中
 			while (!tempPattern.empty())
 			{
-				result << tempPattern.front() << "\t";
+				result << tempPattern.front().getEvent() << "\t";
+				if (tempPattern.size() == 1)
+				{
+					result << ";" << tempPattern.front().getFrequencyRatio();
+					//result << ";" <<tempPattern.front().getOccur()<<'\t'<< tempPattern.front().getFrequencyRatio();
+				}
 				tempPattern.pop();
 			}
 			result << endl;

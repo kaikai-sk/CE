@@ -71,6 +71,49 @@ typedef struct linkheader1
 	node *lastLink;	//	link to the last occurrence of the event in tree
 }linkheader;
 
+/*
+	将我关心的数据组成一个类
+*/
+class SubLinkHeader
+{
+private:
+
+	//事件名称
+	int event;	//	event name of the linkage
+
+	//事件出现的频数
+	int occur;	//	occurence of the node in tree
+
+	//事件出现的频率
+	double frequencyRatio;
+
+public:
+	SubLinkHeader() {}
+
+	SubLinkHeader(int event, int occur, double frequencyRatio)
+	{
+		this->event = event;
+		this->occur = occur;
+		this->frequencyRatio = frequencyRatio;
+	}
+
+	int getOccur()
+	{
+		return this->occur;
+	}
+
+	double getFrequencyRatio()
+	{
+		return this->frequencyRatio;
+	}
+
+	int getEvent()
+	{
+		return this->event;
+	}
+
+};
+
 
 
 //PLWAP算法的入口
@@ -89,5 +132,5 @@ positionCode* makeCode(int, positionCode*, bool);
 // Make position code for a node
 int checkPosition(positionCode*, int, positionCode*, int);
 // Check the position between two nodes
-void MiningProcess(list<node*>, queue<int>, int,char*);
+void MiningProcess(list<node*>, queue<SubLinkHeader>, int,char*);
 // Mine sequential pattern from PLWAP tree

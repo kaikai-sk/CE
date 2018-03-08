@@ -45,6 +45,12 @@
     <ClCompile Include="Node.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="StringUtil.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SetUtil.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cache.h">
@@ -75,6 +81,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Node.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtil.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SetUtil.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -47,6 +47,8 @@ public:
 	void printAccessTrace(unsigned address);
 	unsigned getPrefetchCount();
 	unsigned getPrefetchReplaceCount();
+	// 统计是否预取与命中数目等信息
+	void statistic();
 };
 
 

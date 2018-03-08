@@ -121,6 +121,8 @@
     <ClCompile Include="PrefetchRules.cpp" />
     <ClCompile Include="PreProcessFile.cpp" />
     <ClCompile Include="p_policy.cpp" />
+    <ClCompile Include="SetUtil.cpp" />
+    <ClCompile Include="StringUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cache.h" />
@@ -133,6 +135,8 @@
     <ClInclude Include="PrefetchRules.h" />
     <ClInclude Include="PreProcessFile.h" />
     <ClInclude Include="p_policy.h" />
+    <ClInclude Include="SetUtil.h" />
+    <ClInclude Include="StringUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="accessSeq.txt" />

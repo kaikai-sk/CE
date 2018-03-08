@@ -1,14 +1,18 @@
 #include "lru_core.h"
 
-
-
-
-
-
 LRUCore::LRUCore()
     : head(new Node), tail(new Node)
 {
     tail->attach(head);
+	
+	//初始化统计矩阵
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			this->staticMatrix[i][j] = 0;
+		}
+	}
 }
 
 LRUCore::LRUCore(PrefetchRules prefetchRules)
@@ -144,7 +148,10 @@ void LRUCore::printLRUCoreSnapshoot()
 	(*this->ofs_lruCore_snapshoot) << endl;
 }
 
-unsigned LRUCore::update(unsigned address,unsigned tag)
+/*
+	
+*/
+unsigned LRUCore::update(unsigned address,PageState pageState)
 {
 	Node *node;
 	const auto &iter = records.find(address);
@@ -153,10 +160,20 @@ unsigned LRUCore::update(unsigned address,unsigned tag)
 	if (iter == records.end())
 	{
 		node = new Node;
-		if (tag == 1)
+		if (pageState == prefetched)
 		{
-			node->tag = 1;
+			node->pageState = prefetched;
+			this->prefetchedNodes.push_back(node);
 		}
+		else if(pageState==unprefetched)
+		{
+			node->pageState = unprefetched;
+		}
+		else
+		{
+			node->pageState = unknown;
+		}
+
 		node->key = address;
 		node->attach(head);
 		records[address] = node;
@@ -167,11 +184,17 @@ unsigned LRUCore::update(unsigned address,unsigned tag)
 	{
 		node = iter->second;
 
+		node->isHit = true;
+
 		//预取的块被命中的情况
-		if (node->tag == 1)
+		if (node->pageState == prefetched)
 		{
-			//命中次数++
-			node->hit_num++;
+			this->staticMatrix[0][0]++;
+		}
+		//命中的不是预取的情况
+		else if (node->pageState == unprefetched)
+		{
+			this->staticMatrix[0][1]++;
 		}
 
 		node->detach();
@@ -267,4 +290,35 @@ int main(void)
 void LRUCore::setOfs(ofstream* ofs_lru_core_snapshoot)
 {
 	this->ofs_lruCore_snapshoot = ofs_lru_core_snapshoot;
+}
+
+
+// 统计预取情况和命中情况
+void LRUCore::statistic()
+{
+	int hit_num = 0;
+	for (int i = 0; i < prefetchedNodes.size(); i++)
+	{
+		if (prefetchedNodes[i]->isHit)
+		{
+			hit_num++;
+		}
+	}
+	cout << "总共预取的节点的个数：" << this->prefetchedNodes.size() << " 被命中的个数是" << hit_num << endl;
+
+	/*
+	         是预读  不是预读
+      命中
+	  未命中
+	*/
+	cout << "        是预读  不是预读" << endl;
+	cout << "命中    " << this->staticMatrix[0][0] << "      " << this->staticMatrix[0][1] << endl;
+	cout << "未命中  " << this->staticMatrix[1][0] << "          " << this->staticMatrix[1][1] << endl;
+}
+
+
+// 拿到当前cache的快照
+unordered_map<unsigned, Node *>* LRUCore::getCacheShot()
+{
+	return &(this->records);
 }

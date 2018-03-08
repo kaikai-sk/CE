@@ -49,6 +49,7 @@ int Cache::query(unsigned address)
 		this->printCacheSnapshoot();
         return CACHE_MISS;
     }
+	//这里是命中的情况
     else
     {
         vector<Action*> actionList = policy->hit(address);

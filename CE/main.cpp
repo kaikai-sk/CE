@@ -30,8 +30,8 @@ int main(int argc, char *argv[])
 	{
 		cout << argv[1] << endl;
 		PreProcessFile preProcessFile;
-		preProcessFile.vectToMatrix(argv[1], ".\\temp\\dstForPLWAP.data", 20);
-		plwap(0.025,".\\temp\\result_PLWAP.data",".\\temp\\dstForPLWAP.data");
+		preProcessFile.vectToMatrix(argv[1], ".\\temp\\dstForPLWAP.data", 10);
+		plwap(0.5,".\\temp\\result_PLWAP.data",".\\temp\\dstForPLWAP.data");
 		/*plwap(0.6, "result_PLWAP.data", "example.data");*/
 		PostProcessFile postProcessFile;
 		postProcessFile.generateBinaryRules(".\\temp\\result_PLWAP.data", ".\\dst\\result_PLWAP_post.data");
@@ -89,14 +89,9 @@ int main(int argc, char *argv[])
 
     cout << "file: " << argv[1] << " / capacity: " << capacity << endl;
 
-	ifstream prefetchRulesFile(".\\dst\\result_PLWAP_post.data");
-	unsigned P, Q;
 	PrefetchRules prefetchRules;
 
-	for (prefetchRulesFile >> P >> Q; prefetchRulesFile.good(); prefetchRulesFile >> P >> Q)
-	{
-		prefetchRules.put(P, Q);
-	}
+	prefetchRules.loadRules(".\\source\\ts01\\rules_0.025_0.5.txt");
 
     Policy *policy = new LRUPolicy(capacity,prefetchRules,NULL,&ofs_lruCore_snapshot,&ofs_page_detail);
     Cache cache(capacity, policy,&ofs,&ofs_cache_sanpshoot);
@@ -107,7 +102,7 @@ int main(int argc, char *argv[])
 
 
 	int lineNum = 0;
-	int threshold = 10000;
+	int threshold = 2000;
 
     for(ifs >> address; ifs.good(); ifs >> address)
     {
@@ -120,10 +115,10 @@ int main(int argc, char *argv[])
 		{
 			cout << lineNum << endl;
 		}
-		/*if (lineNum == 10000)
+		if (lineNum == threshold)
 		{
 			break;
-		}*/
+		}
         if(cache.query(address) == CACHE_HIT)
             hit_count++;
         else
@@ -137,6 +132,7 @@ int main(int argc, char *argv[])
 	cout << "replace num:" << cache.getReplaceNum() << endl;
 	cout << "prefetch num:" << ((LRUPolicy*)policy)->getPrefetchCount() << endl;
 	cout << "prefetch replace num:" << ((LRUPolicy*)policy)->getPrefetchReplaceCount() << endl;
+	((LRUPolicy*)policy)->statistic();
 
 	cin.get();
 

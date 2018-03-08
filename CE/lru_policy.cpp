@@ -67,7 +67,7 @@ LRUPolicy::~LRUPolicy()
 
 vector<Action*> LRUPolicy::hit(unsigned address)
 {
-    lru_core.update(address,0);
+    lru_core.update(address,unknown);
 	unsigned length = lru_core.size();
 	
 	vector<Action*> actionList;
@@ -80,7 +80,7 @@ vector<Action*> LRUPolicy::hit(unsigned address)
 
 	//2、有可能就进行预取操作
 
-	vector<unsigned> prefetch_address = this->prefetchRules.find(address);
+	vector<unsigned> prefetch_address = this->prefetchRules.find(address,this->lru_core.getCacheShot());
 
 	if (prefetch_address.size() != 0)
 	{
@@ -104,12 +104,12 @@ vector<Action*> LRUPolicy::hit(unsigned address)
 					 unsigned old_old_address = returnedNode.key;
 
 					 //打印被替换出去的page的信息
-					 if (returnedNode.tag == 1)
+					 if (returnedNode.pageState == prefetched)
 					 {
-						 *ofs_page_detail << old_old_address << ' ' << returnedNode.hit_num << endl;
+						 //*ofs_page_detail << old_old_address << ' ' << returnedNode.hit_num << endl;
 					 }
 					
-					lru_core.update(prefetch_address[i],1);
+					lru_core.update(prefetch_address[i],prefetched);
 					action->prefetch_old_address = old_old_address;
 					action->prefetch_address = prefetch_address[i];
 					action->type = POLICY_PREFETCH_REPLACE;
@@ -120,7 +120,7 @@ vector<Action*> LRUPolicy::hit(unsigned address)
 				//缓存还未满
 				else if (length < capacity)
 				{
-					lru_core.update(prefetch_address[i],1);
+					lru_core.update(prefetch_address[i],prefetched);
 					action->prefetch_address = prefetch_address[i];
 					action->type = POLICY_PREFETCH_APPEND;
 					
@@ -157,12 +157,12 @@ vector<Action*>LRUPolicy::miss(unsigned address)
 		 old_address = returnedNode.key;
 
 		 //打印被替换出去的page的信息
-		 if (returnedNode.tag == 1)
+		 if (returnedNode.pageState == prefetched)
 		 {
-			 *ofs_page_detail << old_address << ' ' << returnedNode.hit_num << endl;
+			// *ofs_page_detail << old_address << ' ' << returnedNode.hit_num << endl;
 		 }
 
-		 lru_core.update(address,0);
+		 lru_core.update(address,unprefetched);
 
 		action->type = POLICY_REPLACE;
 		action->old_address = old_address;
@@ -172,7 +172,7 @@ vector<Action*>LRUPolicy::miss(unsigned address)
 	}
 	else  // (length < this->capacity)
 	{
-		lru_core.update(address,0);
+		lru_core.update(address,unprefetched);
 
 		action->type = POLICY_APPEND;
 		action->new_address = address;
@@ -183,7 +183,7 @@ vector<Action*>LRUPolicy::miss(unsigned address)
 	}
 
 	//2、进行预取的操作
-	vector<unsigned> prefetch_address=this->prefetchRules.find(address);
+	vector<unsigned> prefetch_address=this->prefetchRules.find(address, this->lru_core.getCacheShot());
 	
 	for (int i = 0; i < prefetch_address.size(); i++)
 	{
@@ -202,12 +202,12 @@ vector<Action*>LRUPolicy::miss(unsigned address)
 			unsigned old_old_address = returnedNode.key;
 
 			//打印被替换出去的page的信息
-			if (returnedNode.tag == 1)
+			if (returnedNode.pageState == prefetched)
 			{
-				*ofs_page_detail << old_old_address << ' ' << returnedNode.hit_num << endl;
+				//*ofs_page_detail << old_old_address << ' ' << returnedNode.hit_num << endl;
 			}
 
-			lru_core.update(prefetch_address[i],1);
+			lru_core.update(prefetch_address[i],prefetched);
 			action->prefetch_old_address = old_old_address;
 			action->prefetch_address = prefetch_address[i];
 			action->type = POLICY_PREFETCH_REPLACE;
@@ -220,7 +220,7 @@ vector<Action*>LRUPolicy::miss(unsigned address)
 		//预取地址不在缓存中，进行添加
 		else if(length<capacity)
 		{
-			lru_core.update(prefetch_address[i],1);
+			lru_core.update(prefetch_address[i],prefetched);
 			action->prefetch_address = prefetch_address[i];
 			action->type = POLICY_PREFETCH_APPEND;
 
@@ -282,4 +282,11 @@ unsigned LRUPolicy::getPrefetchCount()
 unsigned LRUPolicy::getPrefetchReplaceCount()
 {
 	return this->prefetchReplaceCount;
+}
+
+
+// 统计是否预取与命中数目等信息
+void LRUPolicy::statistic()
+{
+	this->lru_core.statistic();
 }
