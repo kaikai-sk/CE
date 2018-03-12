@@ -322,3 +322,22 @@ unordered_map<unsigned, Node *>* LRUCore::getCacheShot()
 {
 	return &(this->records);
 }
+
+
+// 查找cache中是否包含要查找的page
+int LRUCore::findPage(unsigned int pageNo)
+{
+	unordered_map<unsigned, Node*>::iterator iter = records.begin();
+	int index = 0;
+	while (iter!=records.end())
+	{
+		if (iter->first == pageNo)
+		{
+			return index;
+			break;
+		}
+		iter++;
+		index++;
+	}
+	return -1;
+}

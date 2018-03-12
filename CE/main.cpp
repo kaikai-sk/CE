@@ -39,6 +39,11 @@ int main(int argc, char *argv[])
 		cin.get();
 		return EXIT_SUCCESS;
 	}
+	//运行RuleGrowth算法
+	else if (strcmp(argv[3], "2") == 0)
+	{
+
+	}
 
 	//统计unique page的出现次数，以及确定cache的大小
 	if (strcmp(argv[4], "1") == 0)
@@ -91,7 +96,7 @@ int main(int argc, char *argv[])
 
 	PrefetchRules prefetchRules;
 
-	prefetchRules.loadRules(".\\source\\ts01\\rules_0.025_0.5.txt");
+	//prefetchRules.loadRules(".\\source\\ts01\\rules_0.025_0.5.txt");
 
     Policy *policy = new LRUPolicy(capacity,prefetchRules,NULL,&ofs_lruCore_snapshot,&ofs_page_detail);
     Cache cache(capacity, policy,&ofs,&ofs_cache_sanpshoot);
@@ -102,7 +107,7 @@ int main(int argc, char *argv[])
 
 
 	int lineNum = 0;
-	int threshold = 2000;
+	int threshold = 10000;
 
     for(ifs >> address; ifs.good(); ifs >> address)
     {
@@ -111,7 +116,7 @@ int main(int argc, char *argv[])
 		{
 			continue;
 		}*/
-		if (lineNum % 1000==0)
+		if (lineNum % 500==0)
 		{
 			cout << lineNum << endl;
 		}

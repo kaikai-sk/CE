@@ -50,10 +50,8 @@ public:
 	// 拿到当前cache的快照
 	unordered_map<unsigned, Node *>* getCacheShot();
 
-#ifdef __DEBUG_lru_core__
-    friend int main(void);
-#endif
-
+	// 查找cache中是否包含要查找的page
+	int findPage(unsigned int pageNo);
 };
 
 

@@ -10,117 +10,42 @@ int Cache::query(unsigned address)
 	vector<int> accessPageNo;
 
 	//地址不在cache中
-    if(buffer.find(address) == buffer.end())
-    {
-        vector<Action*> actionList= policy->miss(address);
-		
-		for (int i = 0; i < actionList.size(); i++)
-		{
-			Action action = *actionList[i];
-			switch (action.type)
-			{
-			case POLICY_IGNORE:
-				accessPageNo.push_back(-1);
-				break;
-			case POLICY_APPEND:
-				buffer.insert(action.new_address);
-				accessPageNo.push_back(action.new_address);
-				break;
-			case POLICY_REPLACE:
-				buffer.erase(action.old_address);
-				buffer.insert(action.new_address);
-				accessPageNo.push_back(action.new_address);
-				this->replaceNum++;
-				break;
-			case POLICY_PREFETCH_REPLACE:
-				buffer.erase(action.prefetch_old_address);
-				buffer.insert(action.prefetch_address);
-				accessPageNo.push_back(action.prefetch_address);
-				this->replaceNum ++;
-				break;
-			case POLICY_PREFETCH_APPEND:
-				buffer.insert(action.prefetch_address);
-				accessPageNo.push_back(action.prefetch_address);
-				break;
-			}
-		}
-
-		this->printAccessTrace(accessPageNo);
-		this->printCacheSnapshoot();
+    if(this->findPage(address)==-1)
+	{
+       policy->miss(address);
         return CACHE_MISS;
     }
 	//这里是命中的情况
     else
     {
-        vector<Action*> actionList = policy->hit(address);
-		for (int i = 0; i < actionList.size(); i++)
-		{
-			Action action = *actionList[i];
-			switch (action.type)
-			{
-			case POLICY_IGNORE:
-				accessPageNo.push_back(-1);
-				break;
-			case POLICY_APPEND:
-				buffer.insert(action.new_address);
-				accessPageNo.push_back(action.new_address);
-				break;
-			case POLICY_REPLACE:
-				buffer.erase(action.old_address);
-				buffer.insert(action.new_address);
-				accessPageNo.push_back(action.new_address);
-				this->replaceNum++;
-				break;
-			case POLICY_PREFETCH_REPLACE:
-				buffer.erase(action.prefetch_old_address);
-				buffer.insert(action.prefetch_address);
-				accessPageNo.push_back(action.prefetch_address);
-				this->replaceNum++;
-				break;
-			case POLICY_PREFETCH_APPEND:
-				//buffer.insert(action.new_address);
-				buffer.insert(action.prefetch_address);
-				accessPageNo.push_back(action.prefetch_address);
-				break;
-			}
-		}
-
-		this->printAccessTrace(accessPageNo);
-		this->printCacheSnapshoot();
+        policy->hit(address);
         return CACHE_HIT;
     }
 }
 
-
-#ifdef __DEBUG_cache__
-// g++ -D__DEBUG_cache__ -Wall cache.cpp lru_policy.cpp
-#include <iostream>
-#include "lru_policy.h"
-using namespace std;
-int main(void)
+// 查找一个page是不是在cache当中
+int Cache::findPage(unsigned int address)
 {
-    unsigned stream[] = {0, 1, 2, 3, 4, 5, 6, 5, 6, 7, 6, 5, 4, 3, 2 ,1, 0};
-    unsigned length = sizeof(stream) / sizeof(unsigned);
-
-    Policy *policy = new LRUPolicy(5);
-    Cache *cache = new Cache(5, policy);
-
-    unsigned hit_count = 0;
-    unsigned miss_count = 0;
-
-    for(unsigned i = 0; i < length; i++)
-    {
-        if(cache->query(stream[i]) == CACHE_HIT)
-            hit_count++;
-        else
-            miss_count++;
-    }
-
-    cout << "hit:" << hit_count << " / miss:" << miss_count << endl;
-
-    delete cache;
-    delete policy;
-
-    return 0;
+	return ((LRUPolicy*)(this->policy))->findPage(address);
 }
-#endif
+
+// 打印trace,连续打印多个
+void Cache::printAccessTrace(vector<int> pageNos)
+{
+	for (int i = 0; i < pageNos.size(); i++)
+	{
+		(*ofs) << pageNos[i] << " ";
+	}
+	(*ofs) << endl;
+}
+
+// 输出page no到文件中，即，记录trace
+void Cache::printAccessTrace(int pageNo)
+{
+	(*ofs) << pageNo << endl;
+}
+
+unsigned Cache::getReplaceNum()
+{
+	return this->replaceNum;
+}

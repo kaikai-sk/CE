@@ -37,18 +37,20 @@ public:
 	LRUPolicy(unsigned capacity, PrefetchRules prefetchRules, ofstream* ofs, ofstream* ofs_lru_core_snapshoot,ofstream* ofs_page_detail);
     ~LRUPolicy();
 
-    vector<Action*> hit(unsigned address);
-	vector<Action*> miss(unsigned address);
+    void hit(unsigned address);
+	void miss(unsigned address);
 
-#ifdef __DEBUG_lru_policy__
-    friend int main(void);
-#endif
 	// 打印出预取的trace
 	void printAccessTrace(unsigned address);
 	unsigned getPrefetchCount();
 	unsigned getPrefetchReplaceCount();
 	// 统计是否预取与命中数目等信息
 	void statistic();
+
+	// 查找一个page是不是在cache中
+	int findPage(unsigned int pageNo);
+	// 进行预取操作
+	void doPrefetch(int address);
 };
 
 
