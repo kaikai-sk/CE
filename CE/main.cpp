@@ -95,8 +95,11 @@ int main(int argc, char *argv[])
     cout << "file: " << argv[1] << " / capacity: " << capacity << endl;
 
 	PrefetchRules prefetchRules;
+	prefetchRules.head = NULL;
 
 	//prefetchRules.loadRules(".\\source\\ts01\\rules_0.025_0.5.txt");
+	loadRules(&prefetchRules, ".\\source\\artificial\\test.data");
+	//printRules(&prefetchRules);
 
     Policy *policy = new LRUPolicy(capacity,prefetchRules,NULL,&ofs_lruCore_snapshot,&ofs_page_detail);
     Cache cache(capacity, policy,&ofs,&ofs_cache_sanpshoot);
